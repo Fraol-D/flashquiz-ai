@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import QuizForm from "./components/QuizForm.jsx";
-import QuizStage from "./components/QuizStage.jsx";
+// import QuizStage from "./components/QuizStage.jsx";
+import QuizDisplay from "./components/QuizDisplay.jsx";
 import LoadingCard from "./components/LoadingCard.jsx";
 import ErrorCard from "./components/ErrorCard.jsx";
 import ThemeToggle from "./components/ThemeToggle.jsx";
@@ -12,8 +13,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [stage, setStage] = useState("input"); // input | quiz | results
   const [questions, setQuestions] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [answers, setAnswers] = useState({}); // qi -> oi
   const [score, setScore] = useState(0);
   const [error, setError] = useState("");
 
@@ -22,15 +22,18 @@ function App() {
     []
   );
 
-  async function handleGenerate(text) {
+  async function handleGenerate(text, numQuestions = 6) {
     try {
       setIsLoading(true);
       setError("");
       setScore(0);
-      setCurrentIndex(0);
-      setSelectedOption(null);
+      setAnswers({});
       const key = localStorage.getItem("GEMINI_API_KEY") || apiKey;
-      const result = await generateQuizFromText({ apiKey: key, text });
+      const result = await generateQuizFromText({
+        apiKey: key,
+        text,
+        numQuestions,
+      });
       setQuestions(result);
       setStage("quiz");
     } catch (err) {
@@ -41,30 +44,24 @@ function App() {
     }
   }
 
-  function handleSelectOption(oi) {
-    if (selectedOption !== null) return;
-    setSelectedOption(oi);
-    if (oi === questions[currentIndex].answerIndex) {
-      setScore((s) => s + 1);
-    }
+  function handleAnswer(qi, oi) {
+    setAnswers((prev) => ({ ...prev, [qi]: oi }));
   }
 
-  function handleNext() {
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex((i) => i + 1);
-      setSelectedOption(null);
-    }
-  }
-
-  function handleFinish() {
+  function handleSubmitAll() {
+    if (!questions.length) return;
+    let correct = 0;
+    questions.forEach((q, i) => {
+      if (answers[i] === q.answerIndex) correct += 1;
+    });
+    setScore(correct);
     setStage("results");
   }
 
   function handlePlayAgain() {
     setStage("input");
     setQuestions([]);
-    setCurrentIndex(0);
-    setSelectedOption(null);
+    setAnswers({});
     setScore(0);
     setError("");
   }
@@ -76,24 +73,20 @@ function App() {
         <div className="flex justify-end">
           <ThemeToggle />
         </div>
-        {stage === "input" && (
-          <>
-            <QuizForm onGenerate={handleGenerate} isLoading={isLoading} />
-            {isLoading && <LoadingCard />}
-            {!isLoading && error && (
-              <ErrorCard message={error} onRetry={() => setError("")} />
-            )}
-          </>
+        {/* Always show input form at top */}
+        <QuizForm onGenerate={handleGenerate} isLoading={isLoading} />
+        {isLoading && <LoadingCard />}
+        {!isLoading && error && (
+          <ErrorCard message={error} onRetry={() => setError("")} />
         )}
 
-        {stage === "quiz" && questions.length > 0 && (
-          <QuizStage
+        {questions.length > 0 && stage !== "results" && (
+          <QuizDisplay
             questions={questions}
-            currentIndex={currentIndex}
-            selectedOption={selectedOption}
-            onSelectOption={handleSelectOption}
-            onNext={handleNext}
-            onFinish={handleFinish}
+            answers={answers}
+            onAnswer={handleAnswer}
+            canSubmit={Object.keys(answers).length === questions.length}
+            onSubmit={handleSubmitAll}
           />
         )}
 

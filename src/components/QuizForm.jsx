@@ -1,13 +1,20 @@
 import { useState } from "react";
 import Spinner from "./Spinner.jsx";
 
-export default function QuizForm({ onGenerate, isLoading }) {
-  const [text, setText] = useState("");
+export default function QuizForm({
+  onGenerate,
+  isLoading,
+  initialText = "",
+  initialCount = 6,
+}) {
+  const [text, setText] = useState(initialText);
+  const [count, setCount] = useState(initialCount);
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!text.trim() || isLoading) return;
-    onGenerate(text.trim());
+    const n = Math.min(Math.max(Number(count) || 6, 1), 20);
+    onGenerate(text.trim(), n);
   }
 
   return (
@@ -29,6 +36,23 @@ export default function QuizForm({ onGenerate, isLoading }) {
         onChange={(e) => setText(e.target.value)}
       />
       <div className="mt-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <label
+            htmlFor="qcount"
+            className="text-sm text-black/70 dark:text-white/70"
+          >
+            Questions
+          </label>
+          <input
+            id="qcount"
+            type="number"
+            min={1}
+            max={20}
+            value={count}
+            onChange={(e) => setCount(e.target.value)}
+            className="glass-input w-24 px-3 py-2"
+          />
+        </div>
         <button
           type="submit"
           className="primary-btn px-5 py-2.5"

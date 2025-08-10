@@ -2,22 +2,23 @@
 const MODEL = "gemini-2.5-pro";
 const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
-export async function generateQuizFromText({ apiKey, text }) {
+export async function generateQuizFromText({ apiKey, text, numQuestions = 6 }) {
   if (!text?.trim()) throw new Error("Missing source text");
+  const n = Math.min(Math.max(Number(numQuestions) || 6, 1), 20);
 
   // Prefer explicit apiKey, fallback to Vite env
   const resolvedKey = apiKey || import.meta.env.VITE_GEMINI_API_KEY || "";
 
   // If no key, return placeholder quiz so the app works end-to-end
   if (!resolvedKey) {
-    return getPlaceholderQuestions(text);
+    return getPlaceholderQuestions(text, n);
   }
 
   const systemPrompt = `You are FlashQuiz, an expert quiz generator. Given arbitrary study text, produce concise multiple-choice questions.
 Requirements:
 - Return STRICT JSON only. No prose.
 - Shape: { "questions": [ { "question": string, "options": string[4], "answerIndex": number } ] }
-- 6 questions, each with exactly 4 options. Ensure one correct answer via answerIndex (0-3). Keep questions clear and unambiguous.`;
+- Generate exactly ${n} questions, each with exactly 4 options. Ensure one correct answer via answerIndex (0-3). Keep questions clear and unambiguous.`;
 
   const body = {
     model: MODEL,
@@ -72,9 +73,9 @@ Requirements:
   return questions;
 }
 
-function getPlaceholderQuestions(source) {
+function getPlaceholderQuestions(source, n = 6) {
   const topic = (source || "").slice(0, 40) || "your text";
-  return [
+  const base = [
     {
       question: `What is a key idea from ${topic}?`,
       options: [
@@ -126,4 +127,7 @@ function getPlaceholderQuestions(source) {
       answerIndex: 0,
     },
   ];
+  const out = [];
+  for (let i = 0; i < n; i++) out.push(base[i % base.length]);
+  return out;
 }
