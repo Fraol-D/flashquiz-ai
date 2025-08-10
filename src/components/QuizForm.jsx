@@ -24,9 +24,9 @@ export default function QuizForm({
     >
       <label
         htmlFor="source"
-        className="block text-sm font-medium mb-2 text-slate-200"
+        className="block text-sm font-medium mb-2 text-black dark:text-white"
       >
-        Paste any study text. We’ll generate a multiple-choice quiz.
+        Paste any study text. We will generate a multiple choice quiz.
       </label>
       <textarea
         id="source"
@@ -68,9 +68,10 @@ export default function QuizForm({
         </button>
         <button
           type="button"
-          className="text-sm text-slate-300 hover:text-white/90 transition-all duration-300 hover:scale-[1.01]"
+          className="text-sm font-medium text-red-500 hover:text-red-400 dark:text-rose-400 dark:hover:text-rose-300 transition-all duration-300 hover:scale-[1.02]"
           onClick={() => setText("")}
           disabled={isLoading}
+          aria-label="Clear input"
         >
           Clear
         </button>

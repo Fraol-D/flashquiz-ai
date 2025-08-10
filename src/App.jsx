@@ -31,6 +31,7 @@ function App() {
       setError("");
       setScore(0);
       setAnswers({});
+      setCurrentIndex(0);
       const key = localStorage.getItem("GEMINI_API_KEY") || apiKey;
       const result = await generateQuizFromText({
         apiKey: key,
@@ -65,6 +66,7 @@ function App() {
     setStage("input");
     setQuestions([]);
     setAnswers({});
+    setCurrentIndex(0);
     setScore(0);
     setError("");
   }
@@ -73,9 +75,6 @@ function App() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
-        <div className="flex justify-end">
-          <ThemeToggle />
-        </div>
         {/* Always show input form at top */}
         <QuizForm onGenerate={handleGenerate} isLoading={isLoading} />
         {isLoading && <LoadingCard />}
@@ -114,17 +113,44 @@ function App() {
         )}
 
         {stage === "results" && (
-          <div className="glass-card p-6 space-y-2">
-            <p className="text-lg font-semibold">
-              Score: {score} / {questions.length}
-            </p>
-            <p className="text-slate-300">
-              {questions.length
-                ? Math.round((score / questions.length) * 100)
-                : 0}
-              %
-            </p>
-            <div className="pt-2">
+          <div className="glass-card p-6 space-y-4 bg-white text-black dark:bg-black/70 dark:text-white">
+            <div>
+              <p className="text-xl font-semibold">Final Score</p>
+              <p className="opacity-80">
+                {score} / {questions.length} (
+                {questions.length
+                  ? Math.round((score / questions.length) * 100)
+                  : 0}
+                %)
+              </p>
+            </div>
+            {questions.map((q, qi) => (
+              <div key={qi} className="space-y-2">
+                <p className="font-medium">
+                  Q{qi + 1}. {q.question}
+                </p>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {q.options.map((opt, oi) => {
+                    let classes = "option-btn";
+                    if (oi === q.answerIndex) classes += " option-btn-correct";
+                    else if (answers[qi] === oi)
+                      classes += " option-btn-incorrect";
+                    return (
+                      <div key={oi} className={classes}>
+                        {opt}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+            <div className="flex items-center justify-between pt-2">
+              <button
+                className="primary-btn px-5 py-2.5"
+                onClick={() => setStage("quiz")}
+              >
+                Review Questions
+              </button>
               <button
                 className="primary-btn px-5 py-2.5"
                 onClick={handlePlayAgain}
