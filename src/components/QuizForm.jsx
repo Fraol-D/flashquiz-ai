@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Spinner from "./Spinner.jsx";
 
 export default function QuizForm({ onGenerate, isLoading }) {
   const [text, setText] = useState("");
@@ -30,7 +31,13 @@ export default function QuizForm({ onGenerate, isLoading }) {
           className="primary-btn px-5 py-2.5"
           disabled={isLoading}
         >
-          {isLoading ? "Generating…" : "Generate Quiz"}
+          {isLoading ? (
+            <span className="inline-flex items-center gap-2">
+              <Spinner /> Generating…
+            </span>
+          ) : (
+            "Generate Quiz"
+          )}
         </button>
         <button
           type="button"

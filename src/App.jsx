@@ -1,15 +1,17 @@
 import { useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import QuizForm from "./components/QuizForm.jsx";
-import QuizDisplay from "./components/QuizDisplay.jsx";
+import QuizStage from "./components/QuizStage.jsx";
 import { generateQuizFromText } from "./services/geminiService.js";
 import "./index.css";
 
 function App() {
   const [isLoading, setIsLoading] = useState(false);
+  const [stage, setStage] = useState("input"); // input | quiz | results
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState({});
-  const [score, setScore] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [selectedOption, setSelectedOption] = useState(null);
+  const [score, setScore] = useState(0);
 
   const apiKey = useMemo(
     () => localStorage.getItem("GEMINI_API_KEY") || "",
@@ -19,11 +21,13 @@ function App() {
   async function handleGenerate(text) {
     try {
       setIsLoading(true);
-      setAnswers({});
-      setScore(null);
+      setScore(0);
+      setCurrentIndex(0);
+      setSelectedOption(null);
       const key = localStorage.getItem("GEMINI_API_KEY") || apiKey;
       const result = await generateQuizFromText({ apiKey: key, text });
       setQuestions(result);
+      setStage("quiz");
     } catch (err) {
       console.error(err);
       alert(err.message || "Failed to generate quiz");
@@ -32,42 +36,73 @@ function App() {
     }
   }
 
-  function handleAnswer(questionIndex, optionIndex) {
-    setAnswers((prev) => ({ ...prev, [questionIndex]: optionIndex }));
+  function handleSelectOption(oi) {
+    if (selectedOption !== null) return;
+    setSelectedOption(oi);
+    if (oi === questions[currentIndex].answerIndex) {
+      setScore((s) => s + 1);
+    }
+  }
+
+  function handleNext() {
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex((i) => i + 1);
+      setSelectedOption(null);
+    }
   }
 
   function handleFinish() {
-    if (!questions.length) return;
-    let correct = 0;
-    questions.forEach((q, i) => {
-      if (answers[i] === q.answerIndex) correct += 1;
-    });
-    setScore({ correct, total: questions.length });
+    setStage("results");
+  }
+
+  function handlePlayAgain() {
+    setStage("input");
+    setQuestions([]);
+    setCurrentIndex(0);
+    setSelectedOption(null);
+    setScore(0);
   }
 
   return (
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
-        <QuizForm onGenerate={handleGenerate} isLoading={isLoading} />
+        {stage === "input" && (
+          <QuizForm onGenerate={handleGenerate} isLoading={isLoading} />
+        )}
 
-        {score ? (
-          <div className="glass-card p-6">
+        {stage === "quiz" && questions.length > 0 && (
+          <QuizStage
+            questions={questions}
+            currentIndex={currentIndex}
+            selectedOption={selectedOption}
+            onSelectOption={handleSelectOption}
+            onNext={handleNext}
+            onFinish={handleFinish}
+          />
+        )}
+
+        {stage === "results" && (
+          <div className="glass-card p-6 space-y-2">
             <p className="text-lg font-semibold">
-              Score: {score.correct} / {score.total}
+              Score: {score} / {questions.length}
             </p>
-            <p className="text-slate-300 mt-1">
-              {Math.round((score.correct / score.total) * 100)}%
+            <p className="text-slate-300">
+              {questions.length
+                ? Math.round((score / questions.length) * 100)
+                : 0}
+              %
             </p>
+            <div className="pt-2">
+              <button
+                className="primary-btn px-5 py-2.5"
+                onClick={handlePlayAgain}
+              >
+                Play Again
+              </button>
+            </div>
           </div>
-        ) : null}
-
-        <QuizDisplay
-          questions={questions}
-          answers={answers}
-          onAnswer={handleAnswer}
-          onFinish={handleFinish}
-        />
+        )}
       </main>
     </div>
   );
