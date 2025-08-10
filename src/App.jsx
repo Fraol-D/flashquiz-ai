@@ -4,6 +4,7 @@ import QuizForm from "./components/QuizForm.jsx";
 import QuizStage from "./components/QuizStage.jsx";
 import LoadingCard from "./components/LoadingCard.jsx";
 import ErrorCard from "./components/ErrorCard.jsx";
+import ThemeToggle from "./components/ThemeToggle.jsx";
 import { generateQuizFromText } from "./services/geminiService.js";
 import "./index.css";
 
@@ -72,6 +73,9 @@ function App() {
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
+        <div className="flex justify-end">
+          <ThemeToggle />
+        </div>
         {stage === "input" && (
           <>
             <QuizForm onGenerate={handleGenerate} isLoading={isLoading} />

@@ -3,7 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Base layer overrides for high-contrast theme */
+/* Base layer overrides with smooth theme transitions */
 @layer base {
   html,
   body,
@@ -11,7 +11,7 @@
     height: 100%;
   }
   body {
-    @apply bg-black text-white antialiased;
+    @apply antialiased transition-colors duration-300 bg-white text-black dark:bg-black dark:text-white;
     font-family: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
       Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
   }
@@ -20,24 +20,24 @@
 /* Component layer for reusable glass card */
 @layer components {
   .glass-card {
-    @apply rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-xl transition-all duration-300;
+    @apply rounded-2xl backdrop-blur-2xl shadow-xl transition-all duration-300 bg-black/5 border border-black/10 dark:bg-white/5 dark:border-white/10;
   }
   .glass-input {
-    @apply w-full rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/60 focus:border-white/60 transition-all duration-300;
+    @apply w-full rounded-xl transition-all duration-300 bg-black/5 border border-black/20 text-black placeholder-black/60 focus:outline-none focus:ring-2 focus:ring-black/40 focus:border-black/40 dark:bg-white/10 dark:border-white/20 dark:text-white dark:placeholder-white/60 dark:focus:ring-white/60 dark:focus:border-white/60;
   }
   .primary-btn {
-    @apply inline-flex items-center justify-center rounded-xl bg-white text-black hover:bg-white/90 active:bg-white/80 font-semibold px-4 py-2 transition-all duration-300 shadow-lg shadow-white/10 hover:scale-[1.02] focus:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-white/60 disabled:opacity-60 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center rounded-xl font-semibold px-4 py-2 transition-all duration-300 hover:scale-[1.02] focus:scale-[1.01] focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed bg-black text-white hover:bg-black/90 active:bg-black/80 shadow-lg shadow-black/10 focus:ring-2 focus:ring-black/40 dark:bg-white dark:text-black dark:hover:bg-white/90 dark:active:bg-white/80 dark:shadow-white/10 dark:focus:ring-white/60;
   }
   .option-btn {
-    @apply rounded-xl border px-3 py-2 text-left transition-all duration-300 bg-white/5 border-white/10 hover:bg-white/10 text-white;
+    @apply rounded-xl border px-3 py-2 text-left transition-all duration-300 bg-black/5 border-black/10 hover:bg-black/10 text-black dark:bg-white/5 dark:border-white/10 dark:hover:bg-white/10 dark:text-white;
   }
   .option-btn-selected {
-    @apply bg-white/10 border-white/50 text-white;
+    @apply bg-black/10 border-black/50 text-black dark:bg-white/10 dark:border-white/50 dark:text-white;
   }
   .option-btn-correct {
-    @apply bg-white/20 border-white/70 text-white;
+    @apply text-emerald-600 border-emerald-500 dark:text-emerald-300 dark:border-emerald-400/60;
   }
   .option-btn-incorrect {
-    @apply bg-black/60 border-white/20 text-white/80;
+    @apply text-rose-600 border-rose-500 dark:text-rose-300 dark:border-rose-400/60;
   }
 }

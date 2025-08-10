@@ -29,9 +29,11 @@ export default function QuizStage({
           let classes = "option-btn ";
           if (showFeedback) {
             if (isCorrect) {
-              classes += "option-btn-correct";
+              classes +=
+                " option-btn-correct text-emerald-300 border-emerald-400/60";
             } else if (isSelected) {
-              classes += "option-btn-incorrect";
+              classes +=
+                " option-btn-incorrect text-rose-300 border-rose-400/60";
             } else {
               classes += "";
             }
