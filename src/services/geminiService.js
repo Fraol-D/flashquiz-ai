@@ -54,11 +54,20 @@ Requirements:
   // Attempt to parse JSON from model output
   const jsonStart = candidateText.indexOf("{");
   const jsonEnd = candidateText.lastIndexOf("}");
-  if (jsonStart === -1 || jsonEnd === -1)
-    throw new Error("Invalid model output");
-  const parsed = JSON.parse(candidateText.slice(jsonStart, jsonEnd + 1));
+  if (jsonStart === -1 || jsonEnd === -1) {
+    throw new Error("Invalid model output from Gemini");
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(candidateText.slice(jsonStart, jsonEnd + 1));
+  } catch {
+    throw new Error("Failed to parse Gemini response JSON");
+  }
 
   const questions = Array.isArray(parsed?.questions) ? parsed.questions : [];
+  if (!questions.length) {
+    throw new Error("Gemini returned no questions");
+  }
   return questions;
 }
 

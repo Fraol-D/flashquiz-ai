@@ -2,6 +2,8 @@ import { useMemo, useState } from "react";
 import Header from "./components/Header.jsx";
 import QuizForm from "./components/QuizForm.jsx";
 import QuizStage from "./components/QuizStage.jsx";
+import LoadingCard from "./components/LoadingCard.jsx";
+import ErrorCard from "./components/ErrorCard.jsx";
 import { generateQuizFromText } from "./services/geminiService.js";
 import "./index.css";
 
@@ -12,6 +14,7 @@ function App() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
   const [score, setScore] = useState(0);
+  const [error, setError] = useState("");
 
   const apiKey = useMemo(
     () => localStorage.getItem("GEMINI_API_KEY") || "",
@@ -21,6 +24,7 @@ function App() {
   async function handleGenerate(text) {
     try {
       setIsLoading(true);
+      setError("");
       setScore(0);
       setCurrentIndex(0);
       setSelectedOption(null);
@@ -30,7 +34,7 @@ function App() {
       setStage("quiz");
     } catch (err) {
       console.error(err);
-      alert(err.message || "Failed to generate quiz");
+      setError(err.message || "Failed to generate quiz. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -61,6 +65,7 @@ function App() {
     setCurrentIndex(0);
     setSelectedOption(null);
     setScore(0);
+    setError("");
   }
 
   return (
@@ -68,7 +73,13 @@ function App() {
       <Header />
       <main className="mx-auto max-w-5xl px-4 py-6 space-y-6">
         {stage === "input" && (
-          <QuizForm onGenerate={handleGenerate} isLoading={isLoading} />
+          <>
+            <QuizForm onGenerate={handleGenerate} isLoading={isLoading} />
+            {isLoading && <LoadingCard />}
+            {!isLoading && error && (
+              <ErrorCard message={error} onRetry={() => setError("")} />
+            )}
+          </>
         )}
 
         {stage === "quiz" && questions.length > 0 && (
