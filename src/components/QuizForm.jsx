@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Spinner from "./Spinner.jsx";
 
 export default function QuizForm({
@@ -9,12 +9,40 @@ export default function QuizForm({
 }) {
   const [text, setText] = useState(initialText);
   const [count, setCount] = useState(initialCount);
+  const fileInputRef = useRef(null);
 
   function handleSubmit(e) {
     e.preventDefault();
     if (!text.trim() || isLoading) return;
     const n = Math.min(Math.max(Number(count) || 6, 1), 20);
     onGenerate(text.trim(), n);
+  }
+
+  function handleUploadClick() {
+    if (isLoading) return;
+    fileInputRef.current?.click();
+  }
+
+  function handleFileChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const isTxt =
+      file.type === "text/plain" || file.name.toLowerCase().endsWith(".txt");
+    if (!isTxt) {
+      alert("Please upload a valid .txt file.");
+      e.target.value = "";
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const content = String(evt.target?.result || "");
+      setText(content);
+    };
+    reader.onerror = () => {
+      alert("Failed to read file. Please try again.");
+    };
+    reader.readAsText(file);
+    e.target.value = "";
   }
 
   return (
@@ -35,6 +63,13 @@ export default function QuizForm({
         value={text}
         onChange={(e) => setText(e.target.value)}
       />
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".txt"
+        className="hidden"
+        onChange={handleFileChange}
+      />
       <div className="mt-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <label
@@ -52,6 +87,14 @@ export default function QuizForm({
             onChange={(e) => setCount(e.target.value)}
             className="glass-input w-24 px-3 py-2"
           />
+          <button
+            type="button"
+            onClick={handleUploadClick}
+            disabled={isLoading}
+            className="primary-btn px-3 py-2"
+          >
+            Upload .txt file
+          </button>
         </div>
         <button
           type="submit"
