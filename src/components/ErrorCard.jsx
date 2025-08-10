@@ -1,6 +1,6 @@
 export default function ErrorCard({ message, onRetry }) {
   return (
-    <div className="glass-card p-6 border border-rose-400/30">
+    <div className="glass-card p-6 border border-rose-400/30 hover:shadow-2xl hover:shadow-rose-500/10">
       <p className="text-rose-200 font-semibold">Quiz generation failed</p>
       <p className="text-slate-300 mt-1">
         {message ||

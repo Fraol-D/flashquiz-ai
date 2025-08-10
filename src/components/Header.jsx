@@ -1,10 +1,10 @@
 export default function Header() {
   return (
-    <header className="sticky top-0 z-30 backdrop-blur-xl bg-black/20 border-b border-white/10">
+    <header className="sticky top-0 z-30 backdrop-blur-xl bg-black/40 border-b border-white/10">
       <div className="mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="size-8 rounded-xl bg-cyan-500/20 border border-cyan-400/30 flex items-center justify-center">
-            <span className="text-cyan-300" aria-hidden>
+          <div className="size-8 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center">
+            <span className="text-white" aria-hidden>
               ⚡
             </span>
           </div>

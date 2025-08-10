@@ -10,7 +10,7 @@ export default function QuizStage({
   const isLast = currentIndex === questions.length - 1;
 
   return (
-    <div className="glass-card p-4 sm:p-6 space-y-4">
+    <div className="glass-card p-4 sm:p-6 space-y-4 hover:shadow-2xl hover:shadow-cyan-500/10">
       <div className="flex items-center justify-between">
         <p className="text-sm text-slate-300">
           Question {currentIndex + 1} / {questions.length}
@@ -26,20 +26,17 @@ export default function QuizStage({
           const showFeedback =
             selectedOption !== null && selectedOption !== undefined;
 
-          let classes = "rounded-xl border px-3 py-2 text-left transition ";
+          let classes = "option-btn ";
           if (showFeedback) {
             if (isCorrect) {
-              classes +=
-                "bg-emerald-500/20 border-emerald-400/40 text-emerald-200";
+              classes += "option-btn-correct";
             } else if (isSelected) {
-              classes += "bg-rose-500/20 border-rose-400/40 text-rose-200";
+              classes += "option-btn-incorrect";
             } else {
-              classes += "bg-white/5 border-white/10 text-slate-200";
+              classes += "";
             }
           } else {
-            classes += isSelected
-              ? "bg-cyan-500/20 border-cyan-400/40 text-cyan-200"
-              : "bg-white/5 border-white/10 hover:bg-white/10 text-slate-200";
+            classes += isSelected ? "option-btn-selected" : "";
           }
 
           return (

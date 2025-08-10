@@ -11,7 +11,10 @@ export default function QuizForm({ onGenerate, isLoading }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="glass-card p-4 sm:p-6">
+    <form
+      onSubmit={handleSubmit}
+      className="glass-card p-4 sm:p-6 hover:shadow-2xl hover:shadow-cyan-500/10"
+    >
       <label
         htmlFor="source"
         className="block text-sm font-medium mb-2 text-slate-200"
@@ -41,7 +44,7 @@ export default function QuizForm({ onGenerate, isLoading }) {
         </button>
         <button
           type="button"
-          className="text-sm text-slate-300 hover:text-white/90 transition"
+          className="text-sm text-slate-300 hover:text-white/90 transition-all duration-300 hover:scale-[1.01]"
           onClick={() => setText("")}
           disabled={isLoading}
         >

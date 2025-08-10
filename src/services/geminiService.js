@@ -1,6 +1,6 @@
-// Minimal Gemini 1.5 fetch wrapper. Replace endpoint if needed.
-const API_URL =
-  "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+// Gemini 2.5 Pro model endpoint
+const MODEL = "gemini-2.5-pro";
+const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
 
 export async function generateQuizFromText({ apiKey, text }) {
   if (!text?.trim()) throw new Error("Missing source text");
@@ -20,6 +20,7 @@ Requirements:
 - 6 questions, each with exactly 4 options. Ensure one correct answer via answerIndex (0-3). Keep questions clear and unambiguous.`;
 
   const body = {
+    model: MODEL,
     contents: [
       {
         role: "user",
