@@ -6,6 +6,8 @@ import QuizDisplay from "./components/QuizDisplay.jsx";
 import LoadingCard from "./components/LoadingCard.jsx";
 import ErrorCard from "./components/ErrorCard.jsx";
 import ThemeToggle from "./components/ThemeToggle.jsx";
+import QuestionNavigator from "./components/QuestionNavigator.jsx";
+import SingleQuestion from "./components/SingleQuestion.jsx";
 import { generateQuizFromText } from "./services/geminiService.js";
 import "./index.css";
 
@@ -15,6 +17,7 @@ function App() {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState({}); // qi -> oi
   const [score, setScore] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [error, setError] = useState("");
 
   const apiKey = useMemo(
@@ -81,13 +84,33 @@ function App() {
         )}
 
         {questions.length > 0 && stage !== "results" && (
-          <QuizDisplay
-            questions={questions}
-            answers={answers}
-            onAnswer={handleAnswer}
-            canSubmit={Object.keys(answers).length === questions.length}
-            onSubmit={handleSubmitAll}
-          />
+          <>
+            <SingleQuestion
+              q={questions[currentIndex]}
+              qi={currentIndex}
+              selected={answers[currentIndex]}
+              onAnswer={handleAnswer}
+            />
+            <QuestionNavigator
+              current={currentIndex + 1}
+              total={questions.length}
+              onPrev={() => setCurrentIndex((i) => Math.max(0, i - 1))}
+              onNext={() =>
+                setCurrentIndex((i) => Math.min(questions.length - 1, i + 1))
+              }
+              disablePrev={currentIndex === 0}
+              disableNext={currentIndex === questions.length - 1}
+            />
+            <div className="flex justify-end">
+              <button
+                className="primary-btn mt-4 px-5 py-2.5"
+                onClick={handleSubmitAll}
+                disabled={Object.keys(answers).length !== questions.length}
+              >
+                Submit Answers
+              </button>
+            </div>
+          </>
         )}
 
         {stage === "results" && (
