@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base layer overrides for glassmorphism background */
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-gradient-to-br from-slate-900 via-slate-950 to-black text-slate-100 antialiased;
+  }
+}
+
+/* Component layer for reusable glass card */
+@layer components {
+  .glass-card {
+    @apply rounded-2xl bg-white/10 backdrop-blur-xl border border-white/10 shadow-xl;
+  }
+  .glass-input {
+    @apply w-full rounded-xl bg-white/10 border border-white/15 text-slate-100 placeholder-slate-300/60 focus:outline-none focus:ring-2 focus:ring-cyan-400/60 focus:border-cyan-400/60 transition;
+  }
+  .primary-btn {
+    @apply inline-flex items-center justify-center rounded-xl bg-cyan-500/90 hover:bg-cyan-400/90 active:bg-cyan-300/90 text-slate-900 font-semibold px-4 py-2 transition shadow-lg shadow-cyan-500/20;
+  }
+}
